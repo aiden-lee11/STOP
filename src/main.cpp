@@ -49,6 +49,14 @@ bool isValid(int r, int c, int height, int width,
 	return isInBounds(r, c, width, height) && !nodeMap[r][c].isUsed;
 }
 
+void debugNodeMap(std::vector<std::vector<Node>> &nodeMap) {
+	for (auto row : nodeMap) {
+		for (auto node : row) {
+			std::cout << node << std::endl;
+		}
+	}
+}
+
 void connect(std::vector<std::vector<Node>> &nodeMap) {
 	size_t height = nodeMap.size();
 	size_t width = nodeMap[0].size();
@@ -70,13 +78,7 @@ void connect(std::vector<std::vector<Node>> &nodeMap) {
 int main() {
 	std::vector<std::vector<Node>> nodeMap = map(exampleGrid);
 	connect(nodeMap);
-
-	Node top = nodeMap[0][0];
-	std::cout << top.val << std::endl;
-
-	for (Node *neighbor : top.neighbors) {
-		std::cout << neighbor->val << std::endl;
-	}
+	debugNodeMap(nodeMap);
 
 	return 0;
 }

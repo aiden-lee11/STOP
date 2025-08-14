@@ -1,8 +1,14 @@
+#include <ostream>
 #include <vector>
 
 struct Vec2 {
 	int x;
 	int y;
+
+	friend std::ostream &operator<<(std::ostream &os, Vec2 obj) {
+		os << "(" << obj.x << "," << obj.y << ")";
+		return os;
+	};
 };
 
 namespace Directions {
@@ -26,4 +32,19 @@ class Node {
 	bool isUsed;
 
 	Node(char val, Vec2 pos) : val(val), pos(pos) {}
+
+	friend std::ostream &operator<<(std::ostream &os, const Node &obj) {
+		os << "Node '" << obj.val << "' at " << obj.pos << " has ";
+
+		if (obj.neighbors.empty()) {
+			os << "no neighbors" << std::endl;
+		} else {
+			os << obj.neighbors.size() << " neighbors" << std::endl;
+			for (const Node *neighbor : obj.neighbors) {
+				os << "\t - Node '" << neighbor->val << "' at " << neighbor->pos
+				   << std::endl;
+			}
+		}
+		return os;
+	};
 };

@@ -5,8 +5,8 @@ CXXFLAGS = -Wall -std=c++17
 # Target program name
 TARGET = strands
 
-# Find all .cpp files in src/ (recursively if needed)
-SOURCES = $(wildcard src/*.cpp)
+# Find all .cpp files 
+SOURCES = $(shell find src -name '*.cpp')
 
 # Convert src/file.cpp → build/file.o
 # $(patsubst pattern,replacement,text)
