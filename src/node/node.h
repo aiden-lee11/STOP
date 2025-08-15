@@ -47,4 +47,10 @@ class Node {
 		}
 		return os;
 	};
+	// overload with no neighbors
+	friend std::ostream &operator<<(std::ostream &os, const Node *node) {
+		os << "Node(val='" << node->val << "', pos={" << node->pos.x << ","
+		   << node->pos.y << "})";
+		return os;
+	}
 };

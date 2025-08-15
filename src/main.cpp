@@ -1,8 +1,10 @@
 #include "node/node.h"
+#include <algorithm>
 #include <iostream>
 #include <ostream>
 #include <string>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 // todo put in test file or smth
@@ -24,7 +26,6 @@ const int minWordLength = 4;
 const int width = 6;
 const int height = 8;
 const int maxWordLength = (width * height) - (minWordLength * (numWords - 1));
-// const int maxWordLength = 9;
 
 std::unordered_set<std::string> exampleSolution = {
     "RESIDUE", "VESTIGE", "REMNANT", "LEFTOVERS", "DREGS", "TRACE", "SOUVENIR"};
@@ -93,10 +94,10 @@ void markPathUsed(std::vector<Node *> path) {
 // std::string bfs(Node *node) {
 // }
 
-std::string dfs(Node *node, std::vector<Node *> &path,
-                const int attemptLength) {
+std::pair<std::string, std::vector<Node *>>
+dfs(Node *node, std::vector<Node *> &path, const int attemptLength) {
 	if (node == nullptr || path.size() > attemptLength) {
-		return "";
+		return std::make_pair("", path);
 	}
 
 	path.push_back(node);
@@ -107,28 +108,29 @@ std::string dfs(Node *node, std::vector<Node *> &path,
 	//           << " Path=" << curString << std::endl;
 
 	if (exampleSolution.count(curString) == 1) {
-		std::cout << "  [FOUND] Word=" << curString << std::endl;
+		// std::cout << "  [FOUND] Word=" << curString << std::endl;
 		markPathUsed(path);
-		return curString;
+		return std::make_pair(curString, path);
 	}
 
 	for (Node *neighbor : node->neighbors) {
 		// is the neighbor even valid
 		if (!neighbor->isUsed &&
 		    std::find(path.begin(), path.end(), neighbor) == path.end()) {
-			std::string resPath = dfs(neighbor, path, attemptLength);
-			if (resPath.length() != 0) {
+			auto resPath = dfs(neighbor, path, attemptLength);
+			if (resPath.first.length() != 0) {
 				return resPath;
 			}
 		}
 	}
 
 	path.pop_back();
-	return "";
+	return std::make_pair("", path);
 }
 
-std::vector<std::string> solveBoard(std::vector<std::vector<Node>> &nodeMap) {
-	std::vector<std::string> words;
+std::vector<std::pair<std::string, std::vector<Node *>>>
+solveBoard(std::vector<std::vector<Node>> &nodeMap) {
+	std::vector<std::pair<std::string, std::vector<Node *>>> words;
 
 	for (int attemptLength = 4; attemptLength < maxWordLength;
 	     ++attemptLength) {
@@ -137,14 +139,14 @@ std::vector<std::string> solveBoard(std::vector<std::vector<Node>> &nodeMap) {
 				if (node.isUsed) {
 					continue;
 				}
-				std::cout << "\n[START DFS] From letter '" << node.val
-				          << "' at (" << node.pos.x << "," << node.pos.y
-				          << ")\n";
+				// std::cout << "\n[START DFS] From letter '" << node.val
+				//           << "' at (" << node.pos.x << "," << node.pos.y
+				//           << ")\n";
 				std::vector<Node *> path;
-				std::string word = dfs(&node, path, attemptLength);
+				auto res = dfs(&node, path, attemptLength);
 
-				if (word.length() != 0) {
-					words.push_back(word);
+				if (res.first.length() != 0) {
+					words.push_back(res);
 				}
 			}
 		}
@@ -161,8 +163,15 @@ int main() {
 	std::vector<std::vector<Node>> nodeMap = map(exampleGrid);
 	connect(nodeMap);
 	// debugNodeMap(nodeMap);
-	std::vector<std::string> words = solveBoard(nodeMap);
-	for (std::string word : words) {
-		std::cout << word << std::endl;
+
+	std::vector<std::pair<std::string, std::vector<Node *>>> words =
+	    solveBoard(nodeMap);
+	for (auto word : words) {
+		std::cout << word.first << std::endl;
+		std::cout << "Path to create" << std::endl;
+
+		for (Node *node : word.second) {
+			std::cout << "\t" << node << std::endl;
+		}
 	}
 }

@@ -1,31 +1,33 @@
-# Compiler and flags
-CXX = g++
-CXXFLAGS = -Wall -std=c++17
+CXX := g++
+CXXFLAGS := -std=c++20 -Wall -Wextra -Iinclude -MMD -MP
+SRC_DIR := src
+BUILD_DIR := build
+TARGET := main
 
-# Target program name
-TARGET = strands
+# Find all source files
+SRCS := $(shell find $(SRC_DIR) -name "*.cpp")
+# Generate object file paths under build/
+OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
+# Dependency files
+DEPS := $(OBJS:.o=.d)
 
-# Find all .cpp files 
-SOURCES = $(shell find src -name '*.cpp')
-
-# Convert src/file.cpp → build/file.o
-# $(patsubst pattern,replacement,text)
-OBJECTS = $(patsubst src/%.cpp, build/%.o, $(SOURCES))
-
-# Default target — builds the program
 all: $(TARGET)
 
-# Linking step: combine all .o files into the executable
-$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+$(TARGET): $(OBJS)
+	@echo "Linking $@..."
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
-# Compilation step: compile each .cpp into a .o in build/
-# $< = first prerequisite (source file)
-# $@ = target (object file)
-build/%.o: src/%.cpp
-	@mkdir -p $(dir $@)         # Create folder for object if it doesn't exist
+# Compile each .cpp into .o in build/
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(dir $@)
+	@echo "Compiling $<..."
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up build artifacts
+# Clean build
 clean:
-	rm -f $(TARGET) $(OBJECTS)
+	rm -rf $(BUILD_DIR) $(TARGET)
+
+# Include dependency files if they exist
+-include $(DEPS)
+
+.PHONY: all clean
