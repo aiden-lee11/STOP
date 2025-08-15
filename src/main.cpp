@@ -23,9 +23,8 @@ const int numWords = 7;
 const int minWordLength = 4;
 const int width = 6;
 const int height = 8;
-// const int maxWordLength = (width * height) - (minWordLength * (numWords -
-// 1));
-const int maxWordLength = 9;
+const int maxWordLength = (width * height) - (minWordLength * (numWords - 1));
+// const int maxWordLength = 9;
 
 std::unordered_set<std::string> exampleSolution = {
     "RESIDUE", "VESTIGE", "REMNANT", "LEFTOVERS", "DREGS", "TRACE", "SOUVENIR"};
@@ -90,8 +89,13 @@ void markPathUsed(std::vector<Node *> path) {
 	}
 }
 
-std::string dfs(Node *node, std::vector<Node *> &path) {
-	if (node == nullptr || path.size() > maxWordLength) {
+// TODO try out bfs
+// std::string bfs(Node *node) {
+// }
+
+std::string dfs(Node *node, std::vector<Node *> &path,
+                const int attemptLength) {
+	if (node == nullptr || path.size() > attemptLength) {
 		return "";
 	}
 
@@ -112,7 +116,7 @@ std::string dfs(Node *node, std::vector<Node *> &path) {
 		// is the neighbor even valid
 		if (!neighbor->isUsed &&
 		    std::find(path.begin(), path.end(), neighbor) == path.end()) {
-			std::string resPath = dfs(neighbor, path);
+			std::string resPath = dfs(neighbor, path, attemptLength);
 			if (resPath.length() != 0) {
 				return resPath;
 			}
@@ -126,19 +130,27 @@ std::string dfs(Node *node, std::vector<Node *> &path) {
 std::vector<std::string> solveBoard(std::vector<std::vector<Node>> &nodeMap) {
 	std::vector<std::string> words;
 
-	for (auto &row : nodeMap) {
-		for (Node &node : row) {
-			if (node.isUsed) {
-				continue;
-			}
-			std::cout << "\n[START DFS] From letter '" << node.val << "' at ("
-			          << node.pos.x << "," << node.pos.y << ")\n";
-			std::vector<Node *> path;
-			std::string word = dfs(&node, path);
+	for (int attemptLength = 4; attemptLength < maxWordLength;
+	     ++attemptLength) {
+		for (auto &row : nodeMap) {
+			for (Node &node : row) {
+				if (node.isUsed) {
+					continue;
+				}
+				std::cout << "\n[START DFS] From letter '" << node.val
+				          << "' at (" << node.pos.x << "," << node.pos.y
+				          << ")\n";
+				std::vector<Node *> path;
+				std::string word = dfs(&node, path, attemptLength);
 
-			if (word.length() != 0) {
-				words.push_back(word);
+				if (word.length() != 0) {
+					words.push_back(word);
+				}
 			}
+		}
+
+		if (words.size() == numWords) {
+			break;
 		}
 	}
 
