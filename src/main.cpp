@@ -95,7 +95,7 @@ void markPathUsed(std::vector<Node *> path) {
 // }
 
 std::pair<std::string, std::vector<Node *>>
-dfs(Node *node, std::vector<Node *> &path, const int attemptLength) {
+dfs(Node *node, std::vector<Node *> &path, const size_t attemptLength) {
 	if (node == nullptr || path.size() > attemptLength) {
 		return std::make_pair("", path);
 	}
@@ -132,7 +132,7 @@ std::vector<std::pair<std::string, std::vector<Node *>>>
 solveBoard(std::vector<std::vector<Node>> &nodeMap) {
 	std::vector<std::pair<std::string, std::vector<Node *>>> words;
 
-	for (int attemptLength = 4; attemptLength < maxWordLength;
+	for (size_t attemptLength = 4; attemptLength < maxWordLength;
 	     ++attemptLength) {
 		for (auto &row : nodeMap) {
 			for (Node &node : row) {
@@ -168,7 +168,6 @@ int main() {
 	    solveBoard(nodeMap);
 	for (auto word : words) {
 		std::cout << word.first << std::endl;
-		std::cout << "Path to create" << std::endl;
 
 		for (Node *node : word.second) {
 			std::cout << "\t" << node << std::endl;
