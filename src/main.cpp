@@ -28,7 +28,7 @@ const int height = 8;
 const int maxWordLength = 9;
 
 std::unordered_set<std::string> exampleSolution = {
-    "residue", "vestige", "remnant", "leftovers", "dregs", "trace", "souvenir"};
+    "RESIDUE", "VESTIGE", "REMNANT", "LEFTOVERS", "DREGS", "TRACE", "SOUVENIR"};
 
 std::vector<std::vector<Node>> map(std::vector<std::vector<char>> grid) {
 	std::vector<std::vector<Node>> nodeGrid;
