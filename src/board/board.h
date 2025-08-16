@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include "../node/node.h"
 
@@ -18,4 +20,5 @@ private:
 	void connectAllNodes();
 	bool isInBounds(int row, int col);
 	bool isValid(int row, int col);
+	void debugNodeMap();
 };

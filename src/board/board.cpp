@@ -1,5 +1,6 @@
 #include "board.h"
 #include <vector>
+#include <iostream>
 
 
 Board::Board(const std::vector<std::vector<char>> &initialGrid){
@@ -43,3 +44,29 @@ bool Board::isInBounds(int row, int col) {
 bool Board::isValid(int row, int col) {
 	return isInBounds(row, col) && !m_nodes[row][col].isUsed;
 }
+
+
+void Board::debugNodeMap() {
+	for (auto row : m_nodes) {
+		for (auto node : row) {
+			std::cout << node << std::endl;
+		}
+	}
+}
+
+int Board::getHeight() const {
+	return m_nodes.size();
+};
+
+int Board::getWidth() const {
+	return m_nodes[0].size();
+};
+
+
+Node* Board::getNodeAt(int row, int col) {
+	return &m_nodes[row][col];
+};
+
+const Node* Board::getNodeAt(int row, int col) const {
+	return &m_nodes[row][col];
+};
