@@ -36,28 +36,6 @@ const int maxWordLength = (width * height) - (minWordLength * (numWords - 1));
 std::unordered_set<std::string> exampleSolution = {
 	"RESIDUE", "VESTIGE", "REMNANT", "LEFTOVERS", "DREGS", "TRACE", "SOUVENIR"};
 
-std::vector<std::vector<Node>> map(std::vector<std::vector<char>> grid) {
-	std::vector<std::vector<Node>> nodeGrid;
-
-	for (int r = 0; r < height; r++) {
-		std::vector<Node> row;
-		for (int c = 0; c < width; c++) {
-			row.emplace_back(grid[r][c], Vec2{r, c});
-		}
-		nodeGrid.push_back(std::move(row));
-	}
-
-	return nodeGrid;
-};
-
-bool isInBounds(int row, int col) {
-	return row >= 0 && col >= 0 && row < height && col < width;
-}
-
-bool isValid(int r, int c, std::vector<std::vector<Node>> nodeMap) {
-	return isInBounds(r, c) && !nodeMap[r][c].isUsed;
-}
-
 void debugNodeMap(std::vector<std::vector<Node>> &nodeMap) {
 	for (auto row : nodeMap) {
 		for (auto node : row) {
@@ -102,19 +80,6 @@ void printSolution(std::vector<std::pair<std::string, std::vector<Node *>>> &wor
 	}
 }
 
-void connect(std::vector<std::vector<Node>> &nodeMap) {
-	for (auto &row : nodeMap) {
-		for (Node &curNode : row) {
-			for (Vec2 dir : Directions::ALL) {
-				int newRow = curNode.pos.x + dir.x;
-				int newCol = curNode.pos.y + dir.y;
-				if (isInBounds(newRow, newCol)) {
-					curNode.neighbors.push_back(&nodeMap[newRow][newCol]);
-				}
-			}
-		}
-	}
-}
 
 std::string stringFromPath(std::vector<Node *> &path) {
 	std::string res;
@@ -131,10 +96,6 @@ void markPathUsed(std::vector<Node *> path) {
 		node->isUsed = true;
 	}
 }
-
-// TODO try out bfs
-// std::string bfs(Node *node) {
-// }
 
 std::pair<std::string, std::vector<Node *>>
 dfs(Node *node, std::vector<Node *> &path, const size_t attemptLength) {
@@ -193,7 +154,7 @@ solveBoard(std::vector<std::vector<Node>> &nodeMap, size_t attemptLength) {
 
 
 int main() {
-	std::vector<std::vector<Node>> nodeMap = map(exampleGrid);
+	std::vector<std::vector<Node>> nodeMap =  map(exampleGrid);
 	connect(nodeMap);
 	// debugNodeMap(nodeMap);
 	// printSolution(words);
