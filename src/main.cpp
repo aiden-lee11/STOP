@@ -1,19 +1,12 @@
 #include "node/node.h"
 #include "board/board.h"
 #include "solver/solver.h"
-#include <algorithm>
-#include <cstdio>
-#include <ftxui/screen/color.hpp>
-#include <iostream>
-#include <ostream>
 #include <string>
 #include <unordered_set>
-#include <utility>
 #include <vector>
+#include <ftxui/screen/color.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
-#include <thread>   // For sleeping
-#include <chrono>   // For time units
 
 // todo put in test file or smth
 // clang-format off
@@ -65,22 +58,13 @@ void printBoard(ftxui::Screen& screen, std::vector<std::vector<Node>> &nodeMap) 
 	screen.Print();
 }
 
-void printSolution(std::vector<std::pair<std::string, std::vector<Node *>>> &words){
-	for (auto word : words) {
-		std::cout << word.first << std::endl;
-
-		for (Node *node : word.second) {
-			std::cout << "\t" << node << std::endl;
-		}
-	}
-}
-
-
 int main() {
 	Board board(exampleGrid);
 	Solver solver(exampleSolution);
 	auto screen = ftxui::Screen::Create(ftxui::Dimension::Full());
 
-	solver.solve(board);
-	solver.printSolution();
+	solver.solve(board, [&]{
+		board.printBoard(screen);
+	});
+	// solver.printSolution();
 }

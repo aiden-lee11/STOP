@@ -1,6 +1,12 @@
 #include "board.h"
 #include <vector>
 #include <iostream>
+#include <ftxui/screen/color.hpp>
+#include <ftxui/dom/elements.hpp>
+#include <ftxui/screen/screen.hpp>
+#include <thread>
+#include <chrono>
+
 
 
 Board::Board(const std::vector<std::vector<char>> &initialGrid){
@@ -70,3 +76,29 @@ Node* Board::getNodeAt(int row, int col) {
 const Node* Board::getNodeAt(int row, int col) const {
 	return &m_nodes[row][col];
 };
+
+
+void Board::printBoard(ftxui::Screen& screen) {
+	auto cell = [](const Node* t) { 
+		return (
+		ftxui::text(&t->val) | 
+		ftxui::border | 
+		ftxui::color(t->isUsed ? 
+	ftxui::Color::Red : 
+	       ftxui::Color::White)
+	); 
+	};
+
+	std::vector<ftxui::Elements> lines;
+	for (auto row : m_nodes) {
+		std::vector<ftxui::Element> line;
+		for (auto node : row) {
+			line.push_back(cell(&node));
+		}
+		lines.push_back(line);
+	}
+
+	auto document = ftxui::gridbox({lines});
+	Render(screen, document);
+	screen.Print();
+}

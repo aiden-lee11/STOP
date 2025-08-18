@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "../node/node.h"
+#include <ftxui/screen/screen.hpp>
 
 
 class Board {
@@ -13,6 +14,8 @@ public:
 
 	Node* getNodeAt(int row, int col);
 	const Node* getNodeAt(int row, int col) const;
+	void printBoard(ftxui::Screen& screen);
+
 private:
 	std::vector<std::vector<Node>> m_nodes;
 	int m_width;
