@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ostream>
+#include <string>
 #include <vector>
 
 struct Vec2 {
@@ -54,5 +55,15 @@ class Node {
 		os << "Node(val='" << node->val << "', pos={" << node->pos.x << ","
 		   << node->pos.y << "})";
 		return os;
+	}
+
+	std::string stringFromPath(std::vector<Node *> &path) {
+		std::string res;
+		res.reserve(path.size());
+		for (Node *node : path) {
+			res += node->val;
+		}
+
+		return res;
 	}
 };

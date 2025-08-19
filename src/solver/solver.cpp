@@ -7,41 +7,7 @@
 #include <utility>
 #include <vector>
 
-Solver::Solver(std::unordered_set<std::string> &solutionWords) {
-	m_solutionWords = solutionWords;
-};
-
-void Solver::solve(Board &board, const std::function<void()> &drawFunc) {
-	std::vector<std::pair<std::string, std::vector<Node *>>> words;
-	int width = board.getWidth();
-	int height = board.getHeight();
-
-	for (size_t attemptLength = 4; attemptLength < 9; ++attemptLength) {
-		for (int row = 0; row < height; row++) {
-			for (int col = 0; col < width; col++) {
-				Node *node = board.getNodeAt(row, col);
-				if (node->isUsed) {
-					continue;
-				}
-				std::vector<Node *> path;
-				// auto res = dfs(node, path, attemptLength);
-				auto res = bfs(node, attemptLength);
-
-				if (res.first.length() != 0) {
-					for (Node *node : res.second) {
-						node->isUsed = true;
-						drawFunc();
-					}
-					words.push_back(res);
-				}
-			}
-		}
-	}
-
-	m_foundWords = words;
-};
-
-std::string Solver::stringFromPath(std::vector<Node *> &path) {
+std::string stringFromPath(std::vector<Node *> &path) {
 	std::string res;
 	res.reserve(path.size());
 	for (Node *node : path) {
@@ -51,24 +17,51 @@ std::string Solver::stringFromPath(std::vector<Node *> &path) {
 	return res;
 }
 
+void Solver::solve(Board &board, const std::function<void()> &drawFunc) {
+	std::vector<std::pair<std::string, std::vector<Node *>>> words;
+	int width = board.getWidth();
+	int height = board.getHeight();
+
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			Node *node = board.getNodeAt(row, col);
+			if (node->isUsed) {
+				continue;
+			}
+			std::vector<Node *> path;
+			// auto res = dfs(node, path);
+			auto res = bfs(node);
+
+			if (res.first.length() != 0) {
+				for (Node *node : res.second) {
+					node->isUsed = true;
+					drawFunc();
+				}
+				words.push_back(res);
+			}
+		}
+	}
+
+	m_foundWords = words;
+};
+
 std::pair<std::string, std::vector<Node *>>
-Solver::dfs(Node *node, std::vector<Node *> &path, const size_t attemptLength) {
-	if (node == nullptr || path.size() > attemptLength) {
+Solver::dfs(Node *node, std::vector<Node *> &path) {
+	if (node == nullptr || !m_trie->isPrefix(path)) {
 		return std::make_pair("", path);
 	}
 
 	path.push_back(node);
-	std::string curString = stringFromPath(path);
 
-	if (m_solutionWords.count(curString) == 1) {
-		return std::make_pair(curString, path);
+	if (m_trie->isWord(path)) {
+		return std::make_pair(stringFromPath(path), path);
 	}
 
 	for (Node *neighbor : node->neighbors) {
 		// is the neighbor even valid
 		if (!neighbor->isUsed &&
 		    std::find(path.begin(), path.end(), neighbor) == path.end()) {
-			auto resPath = dfs(neighbor, path, attemptLength);
+			auto resPath = dfs(neighbor, path);
 			if (resPath.first.length() != 0) {
 				return resPath;
 			}
@@ -79,8 +72,7 @@ Solver::dfs(Node *node, std::vector<Node *> &path, const size_t attemptLength) {
 	return {"", {}};
 };
 
-std::pair<std::string, std::vector<Node *>>
-Solver::bfs(Node *node, const size_t attemptLength) {
+std::pair<std::string, std::vector<Node *>> Solver::bfs(Node *node) {
 	std::deque<std::vector<Node *>> queue;
 	queue.push_back({node});
 
@@ -88,14 +80,12 @@ Solver::bfs(Node *node, const size_t attemptLength) {
 		auto path = queue.front();
 		queue.pop_front();
 
-		std::string curString = stringFromPath(path);
-
-		if (m_solutionWords.contains(curString)) {
-			return {curString, path};
+		if (!m_trie->isPrefix(path)) {
+			continue;
 		}
 
-		if (path.size() > attemptLength) {
-			return {"", {}};
+		if (m_trie->isWord(path)) {
+			return std::make_pair(stringFromPath(path), path);
 		}
 
 		Node *lastNode = path.back();
