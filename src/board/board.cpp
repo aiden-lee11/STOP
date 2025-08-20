@@ -76,11 +76,10 @@ void Board::printBoard() {
 		if (t->isUsed) {
 			node_color = ftxui::Color::Red;
 		} else if (t->inPath) {
-			node_color = ftxui::Color::SkyBlue1;
+			node_color = ftxui::Color::SkyBlue3;
 		}
-		return (ftxui::text(" " + std::string(1, t->val) + " ") | ftxui::bold |
-		        ftxui::border | ftxui::size(ftxui::WIDTH, ftxui::EQUAL, 5) |
-		        ftxui::size(ftxui::HEIGHT, ftxui::EQUAL, 3) | ftxui::center |
+		return (ftxui::text("  " + std::string(1, t->val) + "  ") |
+		        ftxui::bold | ftxui::borderHeavy | ftxui::center |
 		        ftxui::color(node_color));
 	};
 
@@ -93,8 +92,8 @@ void Board::printBoard() {
 		lines.push_back(line);
 	}
 
-	auto document = ftxui::gridbox({lines}) | ftxui::center | ftxui::vcenter;
+	auto document = ftxui::gridbox({lines}) | ftxui::center;
 	Render(m_screen, document);
 	m_screen.Print();
-	std::this_thread::sleep_for(std::chrono::milliseconds(75));
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
