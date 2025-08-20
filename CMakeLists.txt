@@ -21,6 +21,11 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 # Create the executable
 add_executable(main ${SOURCES})
 
+# Set the output directory for the executable to be the project root
+set_target_properties(main PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
 target_link_libraries(main PRIVATE
     # Chose a submodule
     ftxui::component
