@@ -71,7 +71,7 @@ Solver::dfs(Node *node, std::vector<Node *> &path,
 	}
 
 	Node *lastNode = path.back();
-	lastNode->isUsed = false;
+	lastNode->inPath = false;
 	path.pop_back();
 
 	return {"", {}};
