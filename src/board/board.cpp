@@ -1,22 +1,22 @@
 #include "board.h"
-#include <vector>
-#include <iostream>
-#include <ftxui/screen/color.hpp>
-#include <ftxui/dom/elements.hpp>
-#include <ftxui/screen/screen.hpp>
-#include <thread>
 #include <chrono>
+#include <ftxui/dom/elements.hpp>
+#include <ftxui/screen/color.hpp>
+#include <ftxui/screen/screen.hpp>
+#include <iostream>
+#include <thread>
+#include <vector>
 
-
-
-Board::Board(const std::vector<std::vector<char>> &initialGrid){
+Board::Board(const std::vector<std::vector<char>> &initialGrid,
+             ftxui::Screen &screen)
+    : m_screen(screen) {
 	if (initialGrid.empty() || initialGrid[0].empty()) {
 		throw std::invalid_argument("empty grid");
 	}
 	std::vector<std::vector<Node>> nodeGrid;
 
 	m_height = initialGrid.size();
-	m_width = initialGrid[0].size(); 
+	m_width = initialGrid[0].size();
 
 	for (int r = 0; r < m_height; r++) {
 		std::vector<Node> row;
@@ -51,7 +51,6 @@ bool Board::isValid(int row, int col) {
 	return isInBounds(row, col) && !m_nodes[row][col].isUsed;
 }
 
-
 void Board::debugNodeMap() {
 	for (auto row : m_nodes) {
 		for (auto node : row) {
@@ -60,33 +59,26 @@ void Board::debugNodeMap() {
 	}
 }
 
-int Board::getHeight() const {
-	return m_nodes.size();
-};
+int Board::getHeight() const { return m_nodes.size(); };
 
-int Board::getWidth() const {
-	return m_nodes[0].size();
-};
+int Board::getWidth() const { return m_nodes[0].size(); };
 
+Node *Board::getNodeAt(int row, int col) { return &m_nodes[row][col]; };
 
-Node* Board::getNodeAt(int row, int col) {
+const Node *Board::getNodeAt(int row, int col) const {
 	return &m_nodes[row][col];
 };
 
-const Node* Board::getNodeAt(int row, int col) const {
-	return &m_nodes[row][col];
-};
-
-
-void Board::printBoard(ftxui::Screen& screen) {
-	auto cell = [](const Node* t) { 
-		return (
-		ftxui::text(&t->val) | 
-		ftxui::border | 
-		ftxui::color(t->isUsed ? 
-	ftxui::Color::Red : 
-	       ftxui::Color::White)
-	); 
+void Board::printBoard() {
+	auto cell = [](const Node *t) {
+		ftxui::Color node_color = ftxui::Color::White;
+		if (t->isUsed) {
+			node_color = ftxui::Color::Red;
+		} else if (t->inPath) {
+			node_color = ftxui::Color::SkyBlue1;
+		}
+		return (ftxui::text(&t->val) | ftxui::border |
+		        ftxui::color(node_color));
 	};
 
 	std::vector<ftxui::Elements> lines;
@@ -99,6 +91,7 @@ void Board::printBoard(ftxui::Screen& screen) {
 	}
 
 	auto document = ftxui::gridbox({lines});
-	Render(screen, document);
-	screen.Print();
+	Render(m_screen, document);
+	m_screen.Print();
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }

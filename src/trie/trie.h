@@ -9,7 +9,7 @@ class Trie {
   public:
 	class TrieNode {
 	  public:
-		TrieNode(char value) : m_value(value) {
+		TrieNode() {
 			for (auto &child : m_children) {
 				child = nullptr;
 			}
@@ -20,20 +20,19 @@ class Trie {
 		std::array<TrieNode *, 26> getChildren();
 		bool isEndOfWord();
 		void enableEndOfWord();
-		void setChild(TrieNode *node);
+		void setChild(int ind);
 
 	  private:
 		bool m_endOfWord;
-		char m_value;
 		std::array<TrieNode *, 26> m_children;
 	};
 
-	Trie(std::unordered_set<std::string> &solutionWords) {
+	Trie(const std::vector<std::string> &solutionWords) {
 		for (std::string word : solutionWords) {
 			insert(word);
 		}
 	};
-	TrieNode *root = new TrieNode('a');
+	TrieNode *root = new TrieNode();
 	bool isPrefix(std::vector<Node *> &path);
 	bool isWord(std::vector<Node *> &path);
 

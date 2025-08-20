@@ -3,7 +3,6 @@
 #include <functional>
 #include <iostream>
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -17,7 +16,7 @@ std::string stringFromPath(std::vector<Node *> &path) {
 	return res;
 }
 
-void Solver::solve(Board &board, const std::function<void()> &drawFunc) {
+void Solver::solve(Board &board) {
 	std::vector<std::pair<std::string, std::vector<Node *>>> words;
 	int width = board.getWidth();
 	int height = board.getHeight();
@@ -29,13 +28,13 @@ void Solver::solve(Board &board, const std::function<void()> &drawFunc) {
 				continue;
 			}
 			std::vector<Node *> path;
-			// auto res = dfs(node, path);
-			auto res = bfs(node);
+			auto res = dfs(node, path, [&] { board.printBoard(); });
+			// auto res = bfs(node);
 
 			if (res.first.length() != 0) {
 				for (Node *node : res.second) {
 					node->isUsed = true;
-					drawFunc();
+					board.printBoard();
 				}
 				words.push_back(res);
 			}
@@ -46,12 +45,15 @@ void Solver::solve(Board &board, const std::function<void()> &drawFunc) {
 };
 
 std::pair<std::string, std::vector<Node *>>
-Solver::dfs(Node *node, std::vector<Node *> &path) {
+Solver::dfs(Node *node, std::vector<Node *> &path,
+            const std::function<void()> &drawFunc) {
 	if (node == nullptr || !m_trie->isPrefix(path)) {
 		return std::make_pair("", path);
 	}
 
 	path.push_back(node);
+	node->inPath = true;
+	drawFunc();
 
 	if (m_trie->isWord(path)) {
 		return std::make_pair(stringFromPath(path), path);
@@ -61,14 +63,17 @@ Solver::dfs(Node *node, std::vector<Node *> &path) {
 		// is the neighbor even valid
 		if (!neighbor->isUsed &&
 		    std::find(path.begin(), path.end(), neighbor) == path.end()) {
-			auto resPath = dfs(neighbor, path);
+			auto resPath = dfs(neighbor, path, drawFunc);
 			if (resPath.first.length() != 0) {
 				return resPath;
 			}
 		}
 	}
 
+	Node *lastNode = path.back();
+	lastNode->isUsed = false;
 	path.pop_back();
+
 	return {"", {}};
 };
 

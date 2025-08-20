@@ -1,12 +1,10 @@
 #include "board/board.h"
 #include "node/node.h"
 #include "solver/solver.h"
-#include "trie/trie.h"
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
 #include <ftxui/screen/screen.hpp>
 #include <string>
-#include <unordered_set>
 #include <vector>
 
 // todo put in test file or smth
@@ -22,47 +20,14 @@ std::vector<std::vector<char>> exampleGrid = {
     {'T', 'N', 'L', 'E', 'R', 'I'}
 };
 // clang-format on
-//
-const int numWords = 7;
-const int minWordLength = 4;
-const int width = 6;
-const int height = 8;
-const int maxWordLength = (width * height) - (minWordLength * (numWords - 1));
 
-// TODO make this a trie for each word
-std::unordered_set<std::string> exampleSolution = {
+const std::vector<std::string> exampleSolution = {
     "RESIDUE", "VESTIGE", "REMNANT", "LEFTOVERS", "DREGS", "TRACE", "SOUVENIR"};
 
-void printBoard(ftxui::Screen &screen,
-                std::vector<std::vector<Node>> &nodeMap) {
-	// auto cell = [](const char* t) { return text(t) | border; };
-	auto cell = [](const Node *t) {
-		return (
-		    ftxui::text(&t->val) | ftxui::border |
-		    ftxui::color(t->isUsed ? ftxui::Color::Red : ftxui::Color::White));
-	};
-
-	std::vector<ftxui::Elements> lines;
-	for (auto row : nodeMap) {
-		std::vector<ftxui::Element> line;
-		for (auto node : row) {
-			line.push_back(cell(&node));
-		}
-		lines.push_back(line);
-	}
-
-	auto document = ftxui::gridbox({lines});
-	Render(screen, document);
-	screen.Print();
-}
-
 int main() {
-	Board board(exampleGrid);
-	Trie trie(exampleSolution);
-	Solver solver(&trie);
 	auto screen = ftxui::Screen::Create(ftxui::Dimension::Full());
+	Board board(exampleGrid, screen);
+	Solver solver(exampleSolution);
 
-	board.printBoard(screen);
-	solver.solve(board, [&] { board.printBoard(screen); });
-	// solver.printSolution();
+	solver.solve(board);
 }

@@ -11,10 +11,7 @@ std::array<Trie::TrieNode *, 26> Trie::TrieNode::getChildren() {
 bool Trie::TrieNode::isEndOfWord() { return m_endOfWord; };
 void Trie::TrieNode::enableEndOfWord() { m_endOfWord = true; };
 
-void Trie::TrieNode::setChild(TrieNode *node) {
-	int ind = node->m_value - 'A';
-	m_children[ind] = node;
-}
+void Trie::TrieNode::setChild(int ind) { m_children[ind] = new TrieNode(); }
 
 bool Trie::search(std::vector<Node *> path, bool prefix) {
 	TrieNode *curTrieNode = root;
@@ -36,7 +33,7 @@ void Trie::insert(std::string word) {
 	for (char c : word) {
 		int ind = c - 'A';
 		if (!curTrieNode->getChildren()[ind]) {
-			curTrieNode->setChild(new TrieNode(c));
+			curTrieNode->setChild(ind);
 		}
 		curTrieNode = curTrieNode->getChildren()[ind];
 	}

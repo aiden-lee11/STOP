@@ -33,6 +33,7 @@ class Node {
 	Vec2 pos;
 	std::vector<Node *> neighbors;
 	bool isUsed;
+	bool inPath;
 
 	Node(char val, Vec2 pos) : val(val), pos(pos) {}
 
@@ -55,15 +56,5 @@ class Node {
 		os << "Node(val='" << node->val << "', pos={" << node->pos.x << ","
 		   << node->pos.y << "})";
 		return os;
-	}
-
-	std::string stringFromPath(std::vector<Node *> &path) {
-		std::string res;
-		res.reserve(path.size());
-		for (Node *node : path) {
-			res += node->val;
-		}
-
-		return res;
 	}
 };
