@@ -12,6 +12,14 @@ FetchContent_Declare(ftxui
 )
 FetchContent_MakeAvailable(ftxui)
 
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+)
+
+FetchContent_MakeAvailable(nlohmann_json)
+
 # Add include directory for headers
 include_directories(src)
 
@@ -31,4 +39,8 @@ target_link_libraries(main PRIVATE
     ftxui::component
     ftxui::dom
     ftxui::screen
+    nlohmann_json::nlohmann_json
 )
+
+# Copy strands.json into build directory (if it exists)
+configure_file(${CMAKE_SOURCE_DIR}/strands.json ${CMAKE_BINARY_DIR}/strands.json COPYONLY)

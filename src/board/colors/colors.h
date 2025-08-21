@@ -6,6 +6,7 @@
 #include "ftxui/screen/color.hpp"
 #include <array>
 
+// TODO borrow some color schemes and make a tui for picking scheme
 extern const std::array<ftxui::Color, 11> color_array = {
     ftxui::Color::Red,
     ftxui::Color::DodgerBlue2,
