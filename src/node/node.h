@@ -34,7 +34,7 @@ class Node {
 	std::vector<Node *> neighbors;
 	bool isUsed;
 	bool inPath;
-	ftxui::Color color;
+	ftxui::Color color = ftxui::Color::GrayLight;
 
 	Node(char val, Vec2 pos) : val(val), pos(pos) {}
 

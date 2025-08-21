@@ -32,7 +32,8 @@ void Solver::solve(Board &board) {
 			// auto res = bfs(node);
 
 			if (res.first.length() != 0) {
-				board.updateBoard(res.second);
+				board.updateBoard(res.second, m_wordsFound);
+				incrementWordsFound();
 				words.push_back(res);
 			}
 		}

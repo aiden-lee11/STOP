@@ -20,7 +20,7 @@ class Solver {
 
   private:
 	std::unique_ptr<Trie> m_trie;
-	int m_wordsFound;
+	int m_wordsFound = 0;
 
 	std::vector<std::pair<std::string, std::vector<Node *>>> m_foundWords;
 

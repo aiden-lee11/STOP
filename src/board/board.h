@@ -16,7 +16,7 @@ class Board {
 	Node *getNodeAt(int row, int col);
 	const Node *getNodeAt(int row, int col) const;
 	void printBoard();
-	void updateBoard(std::vector<Node *> &word);
+	void updateBoard(std::vector<Node *> &word, int ind);
 
   private:
 	std::vector<std::vector<Node>> m_nodes;

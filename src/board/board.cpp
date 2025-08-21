@@ -1,4 +1,5 @@
 #include "board.h"
+#include "colors/colors.h"
 #include <chrono>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
@@ -73,15 +74,16 @@ const Node *Board::getNodeAt(int row, int col) const {
 void Board::printBoard() {
 	m_screen.Clear();
 	auto cell = [](const Node *t) {
-		ftxui::Color node_color = ftxui::Color::White;
+		ftxui::Color border_color = t->color;
 		if (t->isUsed) {
-			node_color = t->color;
+			border_color = t->color;
 		} else if (t->inPath) {
-			node_color = ftxui::Color::SkyBlue3;
+			border_color = ftxui::Color::Salmon1;
 		}
 		return (ftxui::text("  " + std::string(1, t->val) + "  ") |
-		        ftxui::bold | ftxui::borderHeavy | ftxui::center |
-		        ftxui::color(node_color));
+		        ftxui::bold |
+		        ftxui::borderStyled(ftxui::BorderStyle::DOUBLE, border_color) |
+		        ftxui::center | ftxui::color(ftxui::Color::White));
 	};
 
 	std::vector<ftxui::Elements> lines;
@@ -96,29 +98,15 @@ void Board::printBoard() {
 	auto document = ftxui::gridbox({lines}) | ftxui::center;
 	Render(m_screen, document);
 	m_screen.Print();
-	std::this_thread::sleep_for(std::chrono::milliseconds(25));
+	std::this_thread::sleep_for(std::chrono::milliseconds(75));
 }
 
-void Board::updateBoard(std::vector<Node *> &word) {
-	std::uniform_int_distribution<> distrib(0, 255);
-	int r = distrib(m_gen);
-	int g = distrib(m_gen);
-	int b = distrib(m_gen);
-
-	// Pick one channel and boost it to max
-	int channel = std::uniform_int_distribution<>(0, 2)(m_gen);
-	if (channel == 0)
-		r = 255;
-	if (channel == 1)
-		g = 255;
-	if (channel == 2)
-		b = 255;
-
-	ftxui::Color random_color = ftxui::Color::RGB(r, g, b);
+void Board::updateBoard(std::vector<Node *> &word, int ind) {
+	ftxui::Color color = color_array[ind];
 
 	for (Node *node : word) {
 		node->isUsed = true;
-		node->color = random_color;
+		node->color = color;
 		printBoard();
 	}
 }
