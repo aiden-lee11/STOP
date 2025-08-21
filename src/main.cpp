@@ -1,5 +1,4 @@
 #include "board/board.h"
-#include "node/node.h"
 #include "solver/solver.h"
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>

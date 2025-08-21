@@ -4,12 +4,13 @@
 #include <ftxui/screen/color.hpp>
 #include <ftxui/screen/screen.hpp>
 #include <iostream>
+#include <random>
 #include <thread>
 #include <vector>
 
 Board::Board(const std::vector<std::vector<char>> &initialGrid,
              ftxui::Screen &screen)
-    : m_screen(screen) {
+    : m_screen(screen), m_gen(std::random_device{}()) {
 	if (initialGrid.empty() || initialGrid[0].empty()) {
 		throw std::invalid_argument("empty grid");
 	}
@@ -74,7 +75,7 @@ void Board::printBoard() {
 	auto cell = [](const Node *t) {
 		ftxui::Color node_color = ftxui::Color::White;
 		if (t->isUsed) {
-			node_color = ftxui::Color::Red;
+			node_color = t->color;
 		} else if (t->inPath) {
 			node_color = ftxui::Color::SkyBlue3;
 		}
@@ -95,5 +96,29 @@ void Board::printBoard() {
 	auto document = ftxui::gridbox({lines}) | ftxui::center;
 	Render(m_screen, document);
 	m_screen.Print();
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	std::this_thread::sleep_for(std::chrono::milliseconds(25));
+}
+
+void Board::updateBoard(std::vector<Node *> &word) {
+	std::uniform_int_distribution<> distrib(0, 255);
+	int r = distrib(m_gen);
+	int g = distrib(m_gen);
+	int b = distrib(m_gen);
+
+	// Pick one channel and boost it to max
+	int channel = std::uniform_int_distribution<>(0, 2)(m_gen);
+	if (channel == 0)
+		r = 255;
+	if (channel == 1)
+		g = 255;
+	if (channel == 2)
+		b = 255;
+
+	ftxui::Color random_color = ftxui::Color::RGB(r, g, b);
+
+	for (Node *node : word) {
+		node->isUsed = true;
+		node->color = random_color;
+		printBoard();
+	}
 }

@@ -32,10 +32,7 @@ void Solver::solve(Board &board) {
 			// auto res = bfs(node);
 
 			if (res.first.length() != 0) {
-				for (Node *node : res.second) {
-					node->isUsed = true;
-					board.printBoard();
-				}
+				board.updateBoard(res.second);
 				words.push_back(res);
 			}
 		}
@@ -116,3 +113,6 @@ void Solver::printSolution() {
 		}
 	}
 }
+
+void Solver::incrementWordsFound() { m_wordsFound++; }
+int Solver::numWordsFound() { return m_wordsFound; }

@@ -15,9 +15,12 @@ class Solver {
 	void solve(Board &board);
 
 	void printSolution();
+	int numWordsFound();
+	void incrementWordsFound();
 
   private:
 	std::unique_ptr<Trie> m_trie;
+	int m_wordsFound;
 
 	std::vector<std::pair<std::string, std::vector<Node *>>> m_foundWords;
 

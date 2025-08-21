@@ -1,7 +1,7 @@
 #pragma once
 
+#include <ftxui/screen/color.hpp>
 #include <ostream>
-#include <string>
 #include <vector>
 
 struct Vec2 {
@@ -34,6 +34,7 @@ class Node {
 	std::vector<Node *> neighbors;
 	bool isUsed;
 	bool inPath;
+	ftxui::Color color;
 
 	Node(char val, Vec2 pos) : val(val), pos(pos) {}
 
