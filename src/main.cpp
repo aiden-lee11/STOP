@@ -4,53 +4,50 @@
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/color.hpp>
 #include <ftxui/screen/screen.hpp>
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
 
-// todo put in test file or smth
-// clang-format off
-// std::vector<std::vector<char>> exampleGrid = {
-//     {'R', 'E', 'S', 'R', 'E', 'G'},
-//     {'E', 'U', 'R', 'D', 'S', 'R'},
-//     {'S', 'I', 'D', 'E', 'T', 'A'},
-//     {'E', 'V', 'I', 'V', 'E', 'C'},
-//     {'S', 'T', 'G', 'O', 'V', 'U'},
-//     {'R', 'M', 'E', 'T', 'E', 'O'},
-//     {'E', 'N', 'A', 'F', 'N', 'S'},
-//     {'T', 'N', 'L', 'E', 'R', 'I'}
-// };
-// // clang-format on
+struct StrandsData {
+	std::vector<std::vector<char>> grid;
+	std::vector<std::string> solutions;
+};
 
-// const std::vector<std::string> exampleSolution = {
-//     "RESIDUE", "VESTIGE", "REMNANT", "LEFTOVERS", "DREGS", "TRACE", "SOUVENIR"};
-
-std::vector<std::vector<char>>
-load_grid_from_json(const std::string &filename) {
+StrandsData load_strands_from_json(const std::string &filename) {
 	std::ifstream file(filename);
+	if (!file.is_open()) {
+		throw std::runtime_error("Could not open file: " + filename);
+	}
+
 	nlohmann::json j;
 	file >> j;
 
-	std::vector<std::vector<char>> grid;
+	StrandsData data;
+
+	// Load the grid
 	for (const auto &row : j["startingBoard"]) {
 		std::vector<char> rowVec;
 		for (char c : row.get<std::string>()) {
 			rowVec.push_back(c);
 		}
-		grid.push_back(rowVec);
+		data.grid.push_back(rowVec);
 	}
-	return grid;
+
+	// Load theme words and spangram
+	data.solutions = j["themeWords"];
+	data.solutions.push_back(j["spangram"]);
+
+	return data;
 }
 
 int main() {
-	auto screen = ftxui::Screen::Create(ftxui::Dimension::Full());
-	auto grid = load_grid_from_json("strands.json");
-	Board board(grid, screen);
-	std::ifstream file("strands.json");
-	nlohmann::json j;
-	file >> j;
-	std::vector<std::string> themeWords = j["themeWords"];
-	Solver solver(themeWords);
+	StrandsData strandsData = load_strands_from_json("strands.json");
 
+	auto screen = ftxui::Screen::Create(ftxui::Dimension::Full());
+
+	Board board(strandsData.grid, screen);
+
+	Solver solver(strandsData.solutions);
 	solver.solve(board);
 }
